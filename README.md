@@ -51,11 +51,11 @@ int main() {
 ``` 
 
 # Compilación
-flex ejercicio1.l
-gcc lex.yy.c -o ejercicio1 -lfl
+``` flex ejercicio1.l``` 
+``` gcc lex.yy.c -o ejercicio1 -lfl``` 
 
 # Ejecución
-./ejercicio1 < entrada.txt
+``` ./ejercicio1 < entrada.txt``` 
 
 # Resultado
 El programa imprime cada línea del archivo de entrada numerada.
@@ -91,10 +91,10 @@ Se reemplaza strcmp() por strcasecmp() en la función lookup().
 strcasecmp(s, np->word) == 0
 Esto permite comparar palabras ignorando diferencias entre mayúsculas y minúsculas.
 # Compilación
-flex ejercicio2.l
-gcc lex.yy.c -o ejercicio2 -lfl
+``` flex ejercicio2.l``` 
+``` gcc lex.yy.c -o ejercicio2 -lfl``` 
 # Ejecución
-./ejercicio2 < intro.txt
+``` ./ejercicio2 < intro.txt``` 
 # Resultado
 El programa cuenta correctamente las palabras sin distinguir mayúsculas o minúsculas.
 <img width="674" height="149" alt="image" src="https://github.com/user-attachments/assets/fb2af24a-26fa-4c1d-b76b-d8de4d98c748" />
@@ -102,7 +102,53 @@ El programa cuenta correctamente las palabras sin distinguir mayúsculas o minú
 <img width="669" height="107" alt="image" src="https://github.com/user-attachments/assets/10a2fafc-1db7-49b3-a922-c7b60eba0f73" />
 
 
-# Ejercicio 3 – Verificación y elección entre Chaining y Rehashing
+# Ejercicio 3 – Manejo de colisiones en tabla hash
+# Descripción
+El programa de concordancia utiliza una tabla hash de tamaño fijo para almacenar las palabras encontradas en el texto. Cuando varias palabras generan el mismo índice en la tabla, ocurre una colisión.
+Existen dos técnicas comunes para manejar este problema:
+- Chaining (encadenamiento)
+- Rehashing
+En este ejercicio se implementó la técnica de chaining, que consiste en convertir cada posición de la tabla hash en un puntero a una lista enlazada de símbolos. Cuando ocurre una colisión, el nuevo elemento se inserta en la lista correspondiente al bucket.
+# Implementación
+``` 
+struct node {
+    char *word;
+    int count;
+    struct node *next;
+};
+``` 
+El campo next permite enlazar múltiples elementos dentro de la misma posición de la tabla hash.
+La inserción se realiza de la siguiente manera:
+```
+np->next = hashtab[hashval];
+hashtab[hashval] = np;
+``` 
+Esto permite almacenar múltiples símbolos en el mismo bucket.
+# Prueba realizada
+Para demostrar el funcionamiento del encadenamiento se redujo el tamaño de la tabla hash a un valor pequeño:
+``` #define HASHSIZE 3``` 
+Esto provoca que varias palabras generen el mismo índice en la tabla, produciendo colisiones.
+# Compilación
+En la terminal se ejecutaron los siguientes comandos:
+``` flex ejercicio3.l``` 
+``` gcc lex.yy.c -o ejercicio3 -lfl``` 
+# Ejecución
+El programa se ejecutó con un archivo de entrada que contiene varias palabras:
+```./ejercicio3 < entrada.txt```
+
+# Archivo de entrada
+<img width="172" height="218" alt="image" src="https://github.com/user-attachments/assets/7d39ea49-b801-4426-9d2c-1154c168bfda" />
+# Resultado 
+<img width="812" height="268" alt="image" src="https://github.com/user-attachments/assets/6dbeab56-ad9a-4196-a669-78ddef45a2bd" />
+# Explicación
+En el resultado se observa que varias palabras fueron almacenadas en el mismo bucket de la tabla hash. Esto demuestra que las colisiones se resuelven mediante listas enlazadas, lo cual corresponde a la técnica de chaining.
+# Conclusión
+Ambas técnicas, chaining y rehashing, permiten manejar tablas hash de tamaño variable.
+Sin embargo, chaining resulta más adecuado para este programa, ya que:
+- permite almacenar múltiples elementos en un mismo bucket
+- evita reconstruir la tabla completa
+- mantiene el código más simple
+Por esta razón se eligió chaining como método para resolver colisiones en la tabla hash.
 
 
 
