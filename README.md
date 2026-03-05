@@ -2,35 +2,68 @@
 # Ejercicio 1 – Lectura por líneas completas
 # Descripción
 
-El programa original del capítulo procesa caracteres uno por uno utilizando getchar().
-Se modificó el comportamiento para almacenar los caracteres en un arreglo hasta detectar un salto de línea (\n).
+El ejemplo 2-3 del libro procesa los caracteres uno por uno.  
+Podría pensarse que una solución simple sería utilizar el patrón:
 
-Cuando se detecta el fin de línea o se alcanza el límite del buffer, la línea completa se imprime en pantalla.
+^.*\n
 
-# Funcionamiento
-Se utiliza:
-- getchar() para leer caracteres
-- Un arreglo char line[MAXLINE]
-- Un contador i
-- La constante EOF para detectar fin de archivo
-- El programa continúa leyendo mientras:
-"while ((c = getchar()) != EOF)"
+para capturar líneas completas. Sin embargo, el operador `.*` es
+**greedy**, lo que significa que intenta consumir la mayor cantidad
+de texto posible. Esto puede provocar que el lexer capture más texto
+del esperado y afecte el funcionamiento de otras reglas.
 
-# Pruebas realizadas
-Se realizaron pruebas para intentar generar errores:
+Por esta razón se utiliza el patrón:
 
-- Línea normal
-Resultado: Se imprime correctamente.
+[^\n]*\n
 
-- Texto muy largo (más de 1000 caracteres)
-Resultado: Se trunca al tamaño máximo definido por MAXLINE.
+Este patrón significa:
 
-- Entrada finalizada con CTRL+D
-Resultado: El programa termina correctamente.
+- `[^\n]*` : cualquier carácter excepto salto de línea
+- `\n` : final de línea
 
-- Entrada vacía
-Resultado: No imprime nada y no genera errores.
-<img width="1213" height="604" alt="image" src="https://github.com/user-attachments/assets/e8bf0e35-3ba6-4adc-bba1-a9efa3810927" />
+De esta forma se captura exactamente una línea completa sin consumir
+texto adicional.
+
+
+# Código del lexer
+
+
+```lex
+%{
+#include <stdio.h>
+int lineno = 1;
+%}
+
+%%
+
+[^\n]*\n   {
+            printf("%4d: %s", lineno++, yytext);
+          }
+
+.          { }
+
+%%
+
+int main() {
+    yylex();
+    return 0;
+}
+``` 
+
+# Compilación
+flex ejercicio1.l
+gcc lex.yy.c -o ejercicio1 -lfl
+
+# Ejecución
+./ejercicio1 < entrada.txt
+
+# Resultado
+El programa imprime cada línea del archivo de entrada numerada.
+<img width="636" height="269" alt="image" src="https://github.com/user-attachments/assets/ffd66f43-1bb8-44d6-9f85-ffc01d3c163a" />
+<img width="592" height="157" alt="image" src="https://github.com/user-attachments/assets/ac29c143-8d29-488c-b917-16a0ac4f6ed4" />
+<img width="588" height="132" alt="image" src="https://github.com/user-attachments/assets/158e31a0-c127-44dc-b080-2e8b16fe0817" />
+
+
 
 # Ejercicio 2 – Concordancia sin distinguir mayúsculas y minúsculas
 # Requerimientos
