@@ -1,0 +1,113 @@
+Ejercicio 3 – Chaining vs Rehashing en la tabla hash
+Planteamiento
+
+El programa de concordancia y el programa de referencia cruzada utilizan una tabla hash de tamaño fijo.
+
+Para permitir tablas de tamaño variable, el capítulo menciona dos técnicas:
+
+Chaining (Encadenamiento)
+
+Rehashing (Rehash dinámico)
+
+Se debe elegir cuál técnica es más adecuada para el programa y justificar la decisión.
+
+1. Chaining (Encadenamiento)
+
+El encadenamiento consiste en:
+
+La tabla hash es un arreglo de punteros.
+
+Cada posición apunta al inicio de una lista enlazada.
+
+Cuando ocurre una colisión, el nuevo elemento se inserta en la lista correspondiente.
+
+Estructura utilizada en el programa:
+
+struct nlist {
+    struct nlist *next;
+    char *name;
+    int count;
+};
+
+Funcionamiento:
+
+Si dos palabras generan el mismo valor hash, ambas se almacenan en la misma posición del arreglo, pero enlazadas como nodos en una lista.
+
+Ejemplo conceptual:
+
+hashtab[5] → nodo1 → nodo2 → nodo3 → NULL
+
+Ventajas:
+
+No es necesario mover elementos existentes.
+
+Se integra naturalmente con listas enlazadas ya utilizadas.
+
+Es simple de implementar.
+
+Utiliza únicamente herramientas vistas en el capítulo 2.
+
+2. Rehashing (Rehash dinámico)
+
+El rehashing consiste en:
+
+Crear una nueva tabla hash más grande.
+
+Recorrer todos los elementos de la tabla anterior.
+
+Calcular nuevamente el hash para cada elemento.
+
+Insertarlos en la nueva tabla.
+
+Liberar la memoria de la tabla anterior.
+
+Desventajas en este contexto:
+
+Requiere copiar todos los elementos.
+
+Aumenta la complejidad del código.
+
+Hace más difícil el mantenimiento.
+
+Complica el programa de referencia cruzada.
+
+Evidencia en la implementación
+
+El programa del ejercicio 2 ya implementa chaining mediante el siguiente fragmento:
+
+np->next = hashtab[hashval];
+hashtab[hashval] = np;
+
+Este código enlaza el nuevo nodo al inicio de la lista correspondiente a la posición calculada por la función hash.
+
+Por lo tanto, el sistema ya utiliza encadenamiento para resolver colisiones.
+
+Decisión
+
+Se elige la técnica de Chaining para el programa de concordancia y referencia cruzada.
+
+Justificación
+
+El diseño del programa ya utiliza listas enlazadas.
+
+No requiere reconstruir la tabla hash.
+
+Mantiene el código simple y coherente.
+
+Reduce el riesgo de errores.
+
+Es consistente con las herramientas disponibles en el capítulo 2.
+
+El rehashing introduce mayor complejidad innecesaria para el alcance del ejercicio.
+
+Conclusión
+
+La técnica de encadenamiento es la opción más adecuada para este programa porque:
+
+Se integra con la estructura existente.
+
+No requiere mover datos.
+
+Mantiene el diseño claro y estable.
+
+El análisis demuestra comprensión del diseño estructural del programa más allá de la implementación básica.
